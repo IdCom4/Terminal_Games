@@ -357,6 +357,8 @@ int 	moteur_jeu()
 	int mode = 0;
 	int wait = 0;
 	int over = 1;
+	int difficulte;
+	int difficulte2 = 15000;
 	int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN];
 	element joueur[2];
 	element balle[1];
@@ -378,8 +380,8 @@ int 	moteur_jeu()
 	init_grid(grid);
 	joueur_to_grid(grid, joueur);
 	print_grid(grid, 2, mode, point);
-	printf("1 = Mode contre l'IA\n");
-	printf("2 = Mode 2 Joueurs\n");
+	printf("1 = Mode contre l'IA (Tenez le plus longtemps possible !)\n");
+	printf("2 = Mode 2 Joueurs (Que le meilleur gagne !)\n");
 	while(mode != 1 && mode != 2)
 	{
 		c = getchar();
@@ -390,7 +392,10 @@ int 	moteur_jeu()
 			printf("Mauvaise saisie, recommencez.\n");
 	}
 	c = '\0';
-
+	if(mode == 1)
+		balle[0].L = '+';
+	else
+		difficulte2 = 8000;
 	while(c == '\0')
 	{
 		init_grid(grid);
@@ -401,8 +406,17 @@ int 	moteur_jeu()
 		if(mode == 2)
 			printf("Joueur 2: utilisez la touche 'o' pour vous déplacer vers le haut et la touche 'l' pour vous déplacer vers le bas.\n");
 		printf("\nAu moment ou vous lancerez la partie la balle sera lancée également, préparez vous.\n");
-		printf("Entrez n'importe quelle touche pour lancer la partie: \n");
+		printf("Entrez une difficulté pour lancer la partie (1, 2, 3): \n");
 		c = getchar();
+		if(c == '2')
+		{
+			difficulte2 = 20000;
+			difficulte = 1;
+		}
+		else if(c == '3')
+			difficulte = 2;
+		else
+			difficulte = 0;
 	}
 	while((c = getchar()) != '\n' && c != EOF)
     {}
@@ -412,7 +426,7 @@ int 	moteur_jeu()
 		if(unix_text_kbhit() == 1)
 			c = getchar();
 		mode_raw(0);
-		if(wait == WAIT_TIME)
+		if(wait == WAIT_TIME - (difficulte2 * difficulte))
 		{
 			over = move_balle(balle, joueur);
 			wait = 0;

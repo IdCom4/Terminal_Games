@@ -454,9 +454,9 @@ void    init_piece(element piece[1])
 /*typedef struct element element;
 
 struct element {
-	int x;
-	int y;
-	int type;
+    int x;
+    int y;
+    int type;
 };*/
 
 void    terminal_snake()
@@ -490,6 +490,16 @@ void    terminal_snake()
     printf("   |#|    |#|__     |#|    |#|\\#\\   |#| /#\\##\\ \n");
     printf("   |#|    \\####\\    |#|    |#| \\#\\  \\#/ \\####/\n");
 
+}
+
+void    print_tetris()
+{
+    printf("_________  _____ _________  _____    _   ____ \n");
+    printf("\\#######/ /####/ \\#######/ /#####\\  /#\\ /####\\ \n");
+    printf("   |#|    |#|_      |#|    |#|__\\#| |#| \\##\\#/\n");
+    printf("   |#|    |###|     |#|    |#####/  |#|  \\##\\ \n");
+    printf("   |#|    |#|__     |#|    |#|\\#\\   |#| /#\\##\\ \n");
+    printf("   |#|    \\####\\    |#|    |#| \\#\\  \\#/ \\####/\n");
 }
 
 void    clear_screen(int nbr)
@@ -538,7 +548,7 @@ void    mode_raw(int activer)
     raw_actif = activer; 
 }
 
-int     suppr_ligne(int gridMem[LARGEUR_ECRAN][HAUTEUR_ECRAN])
+int     suppr_ligne(int gridMem[LARGEUR_ECRAN][HAUTEUR_ECRAN], int *tetris)
 {
     int yBis;
     int xBis;
@@ -579,6 +589,8 @@ int     suppr_ligne(int gridMem[LARGEUR_ECRAN][HAUTEUR_ECRAN])
         X = 1;
         Y++;
     }
+    if(points == 1000)
+        *tetris = 1;
     return(points);
 }
 
@@ -641,20 +653,20 @@ int     can_move_piece(element piece[1], char c, int gridMem[LARGEUR_ECRAN][HAUT
     return(0);
 }
 
-void	move_piece(element piece[1], char *c)
+void    move_piece(element piece[1], char *c)
 {
-	/*if(*c == 'z' && piece[0].y > 1)
-		piece[0].y -= 1;*/
-	if(*c == 's')
-		piece[0].y += 1;
-	else if(*c == 'q')
-		piece[0].x -= 1;
-	else if(*c == 'd')
-		piece[0].x += 1;
+    /*if(*c == 'z' && piece[0].y > 1)
+        piece[0].y -= 1;*/
+    if(*c == 's')
+        piece[0].y += 1;
+    else if(*c == 'q')
+        piece[0].x -= 1;
+    else if(*c == 'd')
+        piece[0].x += 1;
     *c = ' ';
 }
 
-void	piece_to_grid(element piece[1], int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
+void    piece_to_grid(element piece[1], int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
 {
     int X = 0;
     int Y = 0;
@@ -671,7 +683,7 @@ void	piece_to_grid(element piece[1], int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
     }
 
 
-	//grid[piece[0].x][piece[0].y] = piece[0].type;
+    //grid[piece[0].x][piece[0].y] = piece[0].type;
 }
 
 void    print_grid(int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
@@ -791,52 +803,60 @@ int     rotate_piece(element piece[1], char *c)
     *c = ' ';
 }
 
-int 	moteur_jeu()
+int     moteur_jeu()
 {
-	char c = '\0';
-	int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN];
+    char c = '\0';
+    int tetris = 0;
+    int difficulte = 0;
+    int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN];
     int gridMem[LARGEUR_ECRAN][HAUTEUR_ECRAN];
-	int wait = 0;
-	int over = 0;
+    int wait = 0;
+    int over = 0;
     int moveAuto = 0;
     int points = 0;
-	element piece[1];
-	/*piece[0].type = 3;
-	piece[0].x = LARGEUR_ECRAN / 2;
-	piece[0].y = 1;*/
+    element piece[1];
+    /*piece[0].type = 3;
+    piece[0].x = LARGEUR_ECRAN / 2;
+    piece[0].y = 1;*/
     init_piece(piece);
 
-	while(c == '\0')
-	{
-		init_grid(grid);
-		print_grid(grid);
-		clear_screen(42 - HAUTEUR_ECRAN - 5);
-		printf("Utilisez la touche 'z' pour vous déplacer vers le haut et la touche 's' pour vous déplacer vers le bas.\n");
-		printf("Utilisez la touche 'q' pour vous déplacer vers la gauche et la touche 'd' pour vous déplacer vers la droite.\n");
-		printf("\nAu moment ou vous lancerez la partie la première pièce se lancera également, préparez vous.\n");
-		printf("Entrez n'importe quelle touche pour lancer la partie: \n");
-		c = getchar();
-	}
-	while((c = getchar()) != '\n' && c != EOF)
+    while(c == '\0')
+    {
+        init_grid(grid);
+        print_grid(grid);
+        clear_screen(42 - HAUTEUR_ECRAN - 7);
+        printf("Utilisez la touche 's' pour vous déplacer vers le bas, la touche 'q' pour vous déplacer vers la gauche et la touche 'd' pour vous déplacer vers la droite.\n");
+        printf("Utilisez la touche 'm' pour faire pivoter votre pièce.\n");
+        printf("\n\nAu moment ou vous lancerez la partie la première pièce se lancera également, préparez vous.\n");
+        printf("Entrez votre niveau de difficulté pour lancer la partie (1, 2, 3): \n");
+        c = getchar();
+        if(c == '2')
+            difficulte = 3;
+        else if(c == '3')
+            difficulte = 2;
+        else
+            difficulte = 4;
+    }
+    while((c = getchar()) != '\n' && c != EOF)
     {}
-    
+
     init_grid(gridMem);
-	while(over == 0)
-	{
+    while(over == 0)
+    {
         //printf("wait == %d\n", wait);
         mode_raw(1);
-		if(unix_text_kbhit() == 1)
-			c = getchar();
+        if(unix_text_kbhit() == 1)
+            c = getchar();
         mode_raw(0);
         //printf("après mode_raw\n");
-		if(wait == WAIT_TIME)
-		{
+        if(wait == WAIT_TIME)
+        {
             if(c == 'm' && can_rotate_piece(piece, gridMem) == 1)
                 rotate_piece(piece, &c);
             if(can_move_piece(piece, c, gridMem) == 1)
                 move_piece(piece, &c);
 
-            if(moveAuto == 4)
+            if(moveAuto == difficulte)
             {
                 if(can_move_piece(piece, 's', gridMem) == 1)
                 {
@@ -846,32 +866,60 @@ int 	moteur_jeu()
                 else
                 {
                     piece_to_grid(piece, gridMem);
-                    points += suppr_ligne(gridMem);
+                    points += suppr_ligne(gridMem, &tetris);
                     init_piece(piece);
+                    if(can_move_piece(piece, 's', gridMem) == 0)
+                        over = 1;
                 }
                 moveAuto = 0;
             }
-            printf("can_move_piece = %d\n", can_move_piece(piece, 's', gridMem));
             moveAuto++;
             wait = 0;
-		}
-		if(wait == 0 || wait == WAIT_TIME / 2)
-		{
+        }
+        if(wait == 0 || wait == WAIT_TIME / 2)
+        {
             //printf("dans le wait == 0\n");
-			init_grid(grid);
+            init_grid(grid);
             //printf("init_grid good\n");
             merge_grids(grid, gridMem);
             //printf("merge_grids good\n");
-			piece_to_grid(piece, grid);
+            piece_to_grid(piece, grid);
             //printf("piece to grid good\n");
-			print_grid(grid);
+            print_grid(grid);
             //printf("print_grid good\n");
-            printf("\nPOINTS = %d\n", points);
-			clear_screen(42 - HAUTEUR_ECRAN - 3);
+            if(over == 0 && tetris == 0)
+            {
+                printf("\n\nPOINTS = %d\n", points);
+                clear_screen(42 - HAUTEUR_ECRAN - 6);
+                printf("Appuyez sur 'm' pour faire pivoter la pièce\n");
+                printf("Entrez une direction (q, s, d): \n");
+            }
+            else if(over == 0 && tetris > 0)
+            {
+                tetris++;
+                printf("\n\nPOINTS = %d\n", points);
+                clear_screen((42 - HAUTEUR_ECRAN - 12) / 2);
+                print_tetris();
+                clear_screen((42 - HAUTEUR_ECRAN - 12) / 2);
+                printf("Appuyez sur 'm' pour faire pivoter la pièce\n");
+                printf("Entrez une direction (q, s, d): \n");
+                if(tetris >= 10)
+                    tetris = 0;
+            }
+            else if(over == 1)
+            {
+                printf("\n\nPERDU !\n");
+                printf("\n\nPOINTS = %d\n", points);
+                clear_screen(42 - HAUTEUR_ECRAN - 8);
+            }
             //printf("hors du wait == 0\n");
-		}
-		wait++;
-	}
+        }
+        wait++;
+    }
+    printf("Entrez n'importe quelle touche: \n");
+    c = getchar();
+    while((c = getchar()) != '\n' && c != EOF)
+    {}
 }
 
 int ft_str_compare(char str[])
