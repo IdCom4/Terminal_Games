@@ -1,6 +1,6 @@
 # Terminal_Games
 
 # This repository will contain all of my terminal-games
-# They are royalties free and open source
+# They are royalty free and open source
 
 # Developped by Idriss Cornuau

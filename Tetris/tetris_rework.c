@@ -688,9 +688,24 @@ void    piece_to_grid(element piece[1], int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
 
 void    print_grid(int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
 {
+    FILE *highScore = NULL;
+
+    char score[100];
+    score[99] = '\0';
+
     int x = 0;
     int y = 0;
-    printf("\n=== TERMINAL TETRIS ===\n\n");
+    
+    printf("\n=== TERMINAL TETRIS ===\n");
+    highScore = fopen("score.txt", "r");
+    if(highScore == NULL)
+        printf("HIGHSCORE = 0\n");
+    else
+    {
+        fgets(score, 100, highScore);
+        printf("%s\n", score);
+        fclose(highScore);
+    }
     while(y < HAUTEUR_ECRAN)
     {
         while(x < LARGEUR_ECRAN)
@@ -805,6 +820,10 @@ int     rotate_piece(element piece[1], char *c)
 
 int     moteur_jeu()
 {
+    FILE *highScore = NULL;
+    char score[200];
+    char nom[100];
+
     char c = '\0';
     int tetris = 0;
     int difficulte = 0;
@@ -908,18 +927,67 @@ int     moteur_jeu()
             }
             else if(over == 1)
             {
+                tetris = 0;
                 printf("\n\nPERDU !\n");
                 printf("\n\nPOINTS = %d\n", points);
-                clear_screen(42 - HAUTEUR_ECRAN - 8);
+                if((highScore = fopen("score.txt", "r")) == NULL)
+                {
+                    clear_screen(42 - HAUTEUR_ECRAN - 7);
+                    highScore = fopen("score.txt", "w+");
+                    printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
+                    fgets(nom, 100, stdin);
+                    while(nom[tetris] != '\0')
+                        tetris++;
+                    if(nom[tetris - 1] == '\n')
+                        nom[tetris - 1] = '\0';
+                    sprintf(score, "HIGHSCORE = %d [%s]", points, nom);
+                    fprintf(highScore, "%s", score);
+                    fclose(highScore);
+
+                }
+                else
+                {
+                    wait = 0;
+                    fgets(score, 200, highScore);
+                    while(score[tetris] < '0' || score[tetris] > '9')
+                        tetris++;
+                    while(score[tetris] >= '0' && score[tetris] <= '9')
+                    {
+                        nom[wait] = score[tetris];
+                        tetris++;
+                        wait++;
+                    }
+                    wait = atoi(nom);
+                    if(wait < points)
+                    {
+                        tetris = 0;
+                        clear_screen(42 - HAUTEUR_ECRAN - 7);
+                        fclose(highScore);
+                        highScore = fopen("score.txt", "w+");
+                        printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
+                        fgets(nom, 100, stdin);
+                        while(nom[tetris] != '\0')
+                            tetris++;
+                        if(nom[tetris - 1] == '\n')
+                            nom[tetris - 1] = '\0';
+                        sprintf(score, "HIGHSCORE = %d [%s]", points, nom);
+                        fprintf(highScore, "%s", score);
+                    }
+                    else
+                    {
+                        clear_screen(42 - HAUTEUR_ECRAN - 8);
+                        printf("Entrez n'importe quelle touche: \n");
+                        c = getchar();
+                         while((c = getchar()) != '\n' && c != EOF){}
+                        clear_screen(42 - HAUTEUR_ECRAN - 9);
+                    }
+                    fclose(highScore);
+                }
             }
             //printf("hors du wait == 0\n");
         }
         wait++;
     }
-    printf("Entrez n'importe quelle touche: \n");
-    c = getchar();
-    while((c = getchar()) != '\n' && c != EOF)
-    {}
 }
 
 int ft_str_compare(char str[])

@@ -497,17 +497,11 @@ int unix_text_kbhit(void)
     return select(STDIN_FILENO + 1, &readfds, NULL, NULL, &tv) == 1; 
 }
 
-int 	can_move_piece(element piece[0], char c, int gridMem[LARGEUR_ECRAN][HAUTEUR_ECRAN])
+int 	can_move_piece(element piece[1], char c, int gridMem[LARGEUR_ECRAN][HAUTEUR_ECRAN])
 {
-	element copie[1];
+
 	int Y = 0;
 	int X = 0;
-
-	init__piece(copie);
-	copie[0].x = piece[0].x;
-	copie[0].y = piece[0].y;
-	copie[0].numPiece = piece[0].numPiece;
-	copie[0].numVersion = piece[0].numVersion;
 
 	if(c == 'q')
 	{

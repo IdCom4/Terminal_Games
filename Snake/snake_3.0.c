@@ -333,6 +333,10 @@ void    init_grid(int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
 
 int moteur_jeu(void)
 {
+    FILE *highScore = NULL;
+    char score[200];
+    char nom[100];
+
     char move[2];
     char c = '\0';
     int wait = 0;
@@ -345,6 +349,8 @@ int moteur_jeu(void)
     element fly[1];
     element star[1];
     element snake[LARGEUR_ECRAN * HAUTEUR_ECRAN];
+
+    highScore = fopen("score_snake.txt", "r");
 
     snake[0].nbr = 0;
     if(LARGEUR_ECRAN % 2 == 0)
@@ -363,11 +369,11 @@ int moteur_jeu(void)
     move[0] = 'z';
     while(c == '\0')
     {
-        printf("=== TERMINAL SNAKE ===\n");
+        printf("=== TERMINAL SNAKE ===\n\n");
         init_grid(grid);
         snake_to_grid(grid, snake, nbrElement);
         print_grid(grid);
-        clear_screen(42 - HAUTEUR_ECRAN - 10);
+        clear_screen(42 - HAUTEUR_ECRAN - 11);
         printf("Utilisez la touche 'z' pour vous déplacer vers le haut, la touche 's' pour le bas,\n");
         printf("la touche 'd' pour la droite, la touche 'q' pour la gauche.\n\n");
         printf("@ = tête de Snake\no = corps de Snake\n* = But fixe valant 10 points\n# = But volant valant 50 points\n");
@@ -382,6 +388,13 @@ int moteur_jeu(void)
         if(wait % 100000 / 2 == 0)
         {
             printf("\n=== TERMINAL SNAKE ===\n");
+            if(highScore == NULL)
+                printf("HIGHSCORE = 0\n");
+            else
+            {
+                fgets(score, 200, highScore);
+                printf("%s\n", score);
+            }
             init_grid(grid);
             snake_to_grid(grid, snake, nbrElement);
             if(manger == 1)
@@ -407,7 +420,7 @@ int moteur_jeu(void)
             print_grid(grid);
             printf("\nPOINTS = %d\n", points);
             printf("Entrez une direction (z, q, s, d) : ");
-            clear_screen(42 - HAUTEUR_ECRAN - 2);
+            clear_screen(42 - HAUTEUR_ECRAN - 3);
         }
         mode_raw(1);
         if(unix_text_kbhit() == 1)
@@ -425,12 +438,55 @@ int moteur_jeu(void)
         if (manger == 2)
         {
             printf("\n=== TERMINAL SNAKE ===\n");
+            if(highScore == NULL)
+            {
+                wait = 2000000000;
+                printf("HIGHSCORE = 0\n");
+            }
+            else
+            {
+                wait = 0;
+                fgets(score, 200, highScore);
+                printf("%s\n", score);
+            }
             print_grid(grid);
             printf("\nPerdu !\nPOINTS = %d\n", points);
-            clear_screen(42 - HAUTEUR_ECRAN - 3);
-            printf("Entrez n'importe quelle lettre: ");
-            fgets(move, sizeof move, stdin);
-            while((c = getchar()) != '\n' && c != EOF){}
+            if(wait == 0)
+            {
+                swi = 0;
+                while(score[wait] < '0' || score[wait] > '9')
+                    wait++;
+                while(score[wait] >= '0' && score[wait] <= '9')
+                {
+                       nom[swi] = score[wait];
+                       swi++;
+                       wait++;
+                }
+                wait = atoi(nom);
+                fclose(highScore);
+            }
+            if(wait < points || wait == 2000000000)
+            {
+                wait = 0;
+                clear_screen(42 - HAUTEUR_ECRAN - 4);
+                highScore = fopen("score_snake.txt", "w+");
+                printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
+                fgets(nom, 100, stdin);
+                while(nom[wait] != '\0')
+                    wait++;
+                if(nom[wait - 1] == '\n')
+                    nom[wait - 1] = '\0';
+                sprintf(score, "HIGHSCORE = %d [%s]", points, nom);
+                fprintf(highScore, "%s", score);
+                fclose(highScore);
+            }
+            else
+            {
+                clear_screen(42 - HAUTEUR_ECRAN - 4);
+                printf("Entrez n'importe quelle lettre: ");
+                fgets(move, sizeof move, stdin);
+                while((c = getchar()) != '\n' && c != EOF){}
+            }
         }
         /*while(wait < 99999999)
         {

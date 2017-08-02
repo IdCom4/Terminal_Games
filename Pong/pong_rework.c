@@ -271,11 +271,27 @@ void	balle_to_grid(int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN], element balle[1])
 
 void    print_grid(int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN], int plus, int mode, int point)
 {
+	FILE *highScore = NULL;
+	char score[200];
+	highScore = fopen("score_pong.txt", "r");
+
     int x = 0;
     int y = 0;
     printf("=== TERMINAL PONG ===\n");
     if(mode == 1)
+    {
+    	if(highScore == NULL)
+    		printf("HIGHSCORE = 0\n");
+    	else
+    	{
+    		fgets(score, 200, highScore);
+    		printf("%s\n", score);
+    		fclose(highScore);
+    	}
     	printf("POINTS = %d\n", point);
+    }
+    else
+    	printf("\n\n");
     while(y < HAUTEUR_ECRAN)
     {
         while(x < LARGEUR_ECRAN)
@@ -305,9 +321,9 @@ void    print_grid(int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN], int plus, int mode, i
     }
     printf(" JOUEUR 2\n");
     if(mode == 1)
-    	clear_screen(39 - HAUTEUR_ECRAN - plus);
+    	clear_screen(38 - HAUTEUR_ECRAN - plus);
     else
-    	clear_screen(40 - HAUTEUR_ECRAN - plus);
+    	clear_screen(38 - HAUTEUR_ECRAN - plus);
 }
 
 void    init_grid(int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
@@ -352,6 +368,12 @@ void	move_IA(element joueur[2], element balle[0])
 
 int 	moteur_jeu()
 {
+	FILE *highScore = NULL;
+	char score[200];
+	char nom[100];
+
+	highScore = fopen("score_pong.txt", "r");
+
 	int point = 0;
 	char c = '\0';
 	int mode = 0;
@@ -447,19 +469,90 @@ int 	moteur_jeu()
 		}
 		wait++;
 	}
-	print_grid(grid, 2, mode, point);
 	if(balle[0].L == '-' && mode == 2)
+	{
+		print_grid(grid, 2, mode, point);
 		printf("Le joueur 1 perd, le joueur 2 gagne !\n\n");
+		printf("Entrez n'importe quelle lettre: ");
+		c = getchar();
+		while((c = getchar()) != '\n' && c != EOF)
+    	{}
+	}
 	else if(mode == 2)
+	{
+		print_grid(grid, 2, mode, point);
 		printf("Le joueur 2 perd, le joueur 1 gagne !\n\n");
+		printf("Entrez n'importe quelle lettre: ");
+		c = getchar();
+		while((c = getchar()) != '\n' && c != EOF)
+    	{}
+	}
 	else
 	{
-		printf("Perdu ! POINTS = %d\n\n", point);
+		if(highScore == NULL)
+		{
+			print_grid(grid, 2, mode, point);
+			printf("Perdu ! POINTS = %d coucou\n\n", point);
+		
+            highScore = fopen("score_pong.txt", "w+");
+            printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
+            fgets(nom, 100, stdin);
+            while(nom[wait] != '\0')
+                wait++;
+            if(nom[wait - 1] == '\n')
+                nom[wait - 1] = '\0';
+            sprintf(score, "HIGHSCORE = %d [%s]", point, nom);
+            fprintf(highScore, "%s", score);
+            fclose(highScore);
+		}
+		else
+		{
+			wait = 0;
+			difficulte = 0;
+			fgets(score, 200, highScore);
+			while(score[wait] < '0' || score[wait] > '9')
+			{
+				printf("score[%d] = %c\n", wait, score[wait]);
+                wait++;
+			}
+            while(score[wait] >= '0' && score[wait] <= '9')
+            {
+            	printf("score[%d] = %c\n", wait, score[wait]);
+                nom[difficulte] = score[wait];
+                printf("nom[%d] = %c\n", wait, nom[wait]);
+                wait++;
+                difficulte++;
+            }
+            fclose(highScore);
+            wait = atoi(nom);
+            if(wait < point)
+            {
+            	print_grid(grid, 2, mode, point);
+            	printf("Perdu ! POINTS = %d wait = %d\n\n", point, wait);
+            	highScore = fopen("score_pong.txt", "w+");
+                printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
+                fgets(nom, 100, stdin);
+                while(nom[wait] != '\0')
+                    wait++;
+                if(nom[wait - 1] == '\n')
+                    nom[wait - 1] = '\0';
+                sprintf(score, "HIGHSCORE = %d [%s]", point, nom);
+                fprintf(highScore, "%s", score);
+                fclose(highScore);
+            }
+            else
+            {
+            	print_grid(grid, 2, mode, point);
+				printf("Perdu ! POINTS = %d\n\n", point);
+				printf("Entrez n'importe quelle lettre: ");
+				c = getchar();
+				while((c = getchar()) != '\n' && c != EOF)
+    			{}
+            }
+            	
+		}
 	}
-	printf("Entrez n'importe quelle lettre: ");
-	c = getchar();
-	while((c = getchar()) != '\n' && c != EOF)
-    {}
+	
 	return(0);
 }
 
