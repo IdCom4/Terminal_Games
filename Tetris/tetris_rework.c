@@ -697,7 +697,7 @@ void    print_grid(int grid[LARGEUR_ECRAN][HAUTEUR_ECRAN])
     int y = 0;
     
     printf("\n=== TERMINAL TETRIS ===\n");
-    highScore = fopen("score.txt", "r");
+    highScore = fopen("score_tetris.txt", "r");
     if(highScore == NULL)
         printf("HIGHSCORE = 0\n");
     else
@@ -930,10 +930,10 @@ int     moteur_jeu()
                 tetris = 0;
                 printf("\n\nPERDU !\n");
                 printf("\n\nPOINTS = %d\n", points);
-                if((highScore = fopen("score.txt", "r")) == NULL)
+                if((highScore = fopen("score_tetris.txt", "r")) == NULL)
                 {
                     clear_screen(42 - HAUTEUR_ECRAN - 7);
-                    highScore = fopen("score.txt", "w+");
+                    highScore = fopen("score_tetris.txt", "w+");
                     printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
                     fgets(nom, 100, stdin);
                     while(nom[tetris] != '\0')
@@ -963,7 +963,7 @@ int     moteur_jeu()
                         tetris = 0;
                         clear_screen(42 - HAUTEUR_ECRAN - 7);
                         fclose(highScore);
-                        highScore = fopen("score.txt", "w+");
+                        highScore = fopen("score_tetris.txt", "w+");
                         printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
                         fgets(nom, 100, stdin);
                         while(nom[tetris] != '\0')

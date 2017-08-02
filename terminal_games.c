@@ -64,11 +64,11 @@ int 	main(int argc, char **argv)
 		clear_screen(42 - 23);
 		c = getchar();
 		if(c == '1')
-			system("./Snake/Terminal_Snake");
+			system("~/Documents/Code-perso/Terminal_Games/Snake/Terminal_Snake");
 		else if(c == '2')
-			system("./Pong/Terminal_Pong");
+			system("~/Documents/Code-perso/Terminal_Games/Pong/Terminal_Pong");
 		else if(c == '3')
-			system("./Tetris/Terminal_Tetris");
+			system("~/Documents/Code-perso/Terminal_Games/Tetris/Terminal_Tetris");
 		else if(c == '4')
 			return(0);
 		else
