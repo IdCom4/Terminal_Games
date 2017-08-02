@@ -492,7 +492,7 @@ int 	moteur_jeu()
 		if(highScore == NULL)
 		{
 			print_grid(grid, 2, mode, point);
-			printf("Perdu ! POINTS = %d coucou\n\n", point);
+			printf("Perdu ! POINTS = %d\n\n", point);
 		
             highScore = fopen("score_pong.txt", "w+");
             printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
@@ -512,14 +512,11 @@ int 	moteur_jeu()
 			fgets(score, 200, highScore);
 			while(score[wait] < '0' || score[wait] > '9')
 			{
-				printf("score[%d] = %c\n", wait, score[wait]);
                 wait++;
 			}
             while(score[wait] >= '0' && score[wait] <= '9')
             {
-            	printf("score[%d] = %c\n", wait, score[wait]);
                 nom[difficulte] = score[wait];
-                printf("nom[%d] = %c\n", wait, nom[wait]);
                 wait++;
                 difficulte++;
             }
@@ -528,7 +525,7 @@ int 	moteur_jeu()
             if(wait < point)
             {
             	print_grid(grid, 2, mode, point);
-            	printf("Perdu ! POINTS = %d wait = %d\n\n", point, wait);
+            	printf("Perdu ! POINTS = %d\n\n", point);
             	highScore = fopen("score_pong.txt", "w+");
                 printf("NOUVEAU HIGHSCORE ! Entrez votre nom : ");
                 fgets(nom, 100, stdin);
