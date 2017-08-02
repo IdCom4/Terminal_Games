@@ -1,1 +1,1 @@
-HIGHSCORE = 50 [IdCom4]
+HIGHSCORE = 10 [f]
