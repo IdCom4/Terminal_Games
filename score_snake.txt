@@ -1,0 +1,1 @@
+HIGHSCORE = 70 [IdCom4]
